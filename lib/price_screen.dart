@@ -1,17 +1,22 @@
+import 'package:bitcoin_ticker/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'coin_data.dart';
 import 'dart:io' show Platform;
+import 'package:restart_app/restart_app.dart';
 
 
 class PriceScreen extends StatefulWidget {
   @override
   _PriceScreenState createState() => _PriceScreenState();
 }
+ThemeData appMode = ThemeData.light() ;
 
 class _PriceScreenState extends State<PriceScreen> {
   String selectedCurrency = 'AUD';
-  bool _switchValue=false;
+  bool _switchValue = false;
+  bool _switchValue2 = false;
+
   DropdownButton<String> androidDropdown() {
     List<DropdownMenuItem<String>> dropdownItems = [];
     for (String currency in currenciesList) {
@@ -77,6 +82,7 @@ class _PriceScreenState extends State<PriceScreen> {
 
   Column makeCards() {
     List<CryptoCard> cryptoCards = [];
+
     for (String crypto in cryptoList) {
       cryptoCards.add(
         CryptoCard(
@@ -105,17 +111,20 @@ class _PriceScreenState extends State<PriceScreen> {
           makeCards(),
           SizedBox(
             height: 200.0,
-          )
-          ,
+          ),
           Container(
             height: 150.0,
             alignment: Alignment.center,
             padding: EdgeInsets.only(bottom: 30.0),
             color: Colors.lightBlue,
-            child:!_switchValue ?( Platform.isIOS ? iOSPicker() : androidDropdown()) :( Platform.isIOS ? androidDropdown() : iOSPicker()) ,
+            child: !_switchValue
+                ? (Platform.isIOS ? iOSPicker() : androidDropdown())
+                : (Platform.isIOS ? androidDropdown() : iOSPicker()),
           ),
           ListTile(
-            title: Platform.isIOS ?Text('Switch To Android View ?'): Text('Switch To IOS View ?'),
+            title: Platform.isIOS
+                ? Text('Switch To Android View ?')
+                : Text('Switch To IOS View ?'),
             trailing: CupertinoSwitch(
               value: _switchValue,
               onChanged: (bool value) {
@@ -130,8 +139,25 @@ class _PriceScreenState extends State<PriceScreen> {
               });
             },
           ),
-        ],
+          ListTile(
+            title: Text('Switch To Dark Mode ?'),
+            trailing: CupertinoSwitch(
+              value: _switchValue2,
+              onChanged: (bool value) {
+                setState(() {
+                  _switchValue2 = value;
+                  _switchValue2 ? appMode = ThemeData.light() : appMode =ThemeData.dark() ;
+                });
+              },
+            ),
+            onTap: () {
+              setState(() {
+                _switchValue2 = !_switchValue2;
+              });
+            },
+          ),
 
+        ],
       ),
     );
   }
@@ -140,7 +166,7 @@ class _PriceScreenState extends State<PriceScreen> {
 class CryptoCard extends StatelessWidget {
   const CryptoCard({
     required this.value,
-    required  this.selectedCurrency,
+    required this.selectedCurrency,
     required this.cryptoCurrency,
   });
 
